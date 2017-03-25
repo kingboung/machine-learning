@@ -40,3 +40,33 @@ def calcShannonEnt(dataSet):
         shannonEnt-=prob*log(prob,2)
     return shannonEnt
 
+"""划分数据集"""
+def splitDataSet(dataSet,axis,value):
+    '''
+    :param dataSet:待划分的数据集
+    :param axis: 划分数据集的特征
+    :param value: 需要返回的特征的值
+    :return:
+        splitDataSet(myDat,0,0)->[[1,'no'],[1,'no']]
+        splitDataSet(myDat,0,1)->[[1,'yes'],[1,'yes'],[0,'no']]
+    '''
+    # 创建新的list对象
+    retDataSet=[]
+    for featVec in dataSet:
+        # 抽取符合特征的数据
+        if featVec[axis]==value:
+            reducedFeatVec=featVec[:axis]
+            reducedFeatVec.extend(featVec[axis+1:])
+            '''
+            append与extend的区别:
+            >>> a=[1,2,3]
+            >>> b=[4,5,6]
+            >>> a.append(b)
+            >>> a
+            >>> [1,2,3,[4,5,6]]
+            >>> a.extend(b)
+            >>> a
+            >>> [1,2,3,4,5,6]
+            '''
+            retDataSet.append(reducedFeatVec)
+    return retDataSet
