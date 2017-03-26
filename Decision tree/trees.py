@@ -70,3 +70,27 @@ def splitDataSet(dataSet,axis,value):
             '''
             retDataSet.append(reducedFeatVec)
     return retDataSet
+
+"""选择最好的数据集划分方式"""
+def chooseBestFeatureToSplit(dataSet):
+    # 特征属性的数目(dataSet是由列表元素组成的列表，所有列表元素长度一致，且列表元素最后一个元素是类别标签)
+    numFeatures=len(dataSet[0])-1
+    # 原始香农熵，保存最初的无序度量值
+    baseEntropy=calcShannonEnt(dataSet)
+    bestInfoGain=0.0; bestFeature=-1
+    # 计算每种划分方式的信息熵
+    for i in range(numFeatures):
+        featList=[example[i] for example in dataSet]
+        '''从列表中创建集合是得到列表中唯一元素值最快的方法'''
+        uniqueVals=set(featList)
+        newEntropy=0.0
+        for value in uniqueVals:
+            subDataSet=splitDataSet(dataSet,i,value)
+            prob=len(subDataSet)/float(len(dataSet))
+            newEntropy+=prob*calcShannonEnt(subDataSet)
+        infoGain=baseEntropy-newEntropy
+        # 计算做好的信息熵（信息增益是熵的减少或者是数据无序度的减少）
+        if (infoGain>bestInfoGain):
+            bestInfoGain=infoGain
+            bestFeature=i
+    return bestFeature
