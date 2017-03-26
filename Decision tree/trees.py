@@ -6,6 +6,8 @@
 from numpy import *
 from math import log
 
+import operator
+
 def createDataSet():
     dataSet=[[1,1,'yes'],
              [1,1,'yes'],
@@ -94,3 +96,37 @@ def chooseBestFeatureToSplit(dataSet):
             bestInfoGain=infoGain
             bestFeature=i
     return bestFeature
+
+"""投票表决（数据集已经处理了所有属性，但类标签依然不是唯一的情况下）"""
+def majorityCnt(classList):
+    classCount={}
+    for vote in classList:
+        if vote not in classCount.keys():
+            classCount[vote]=0
+        classCount[vote]+=1
+    # operator.itemgetter(0),利用字典的key值进行排序;operator.itemgetter(1)，利用字典的value值进行排序
+    # {'a':3,'b':8,'c':1}->[('b',8),('a',3),('c',1)]
+    sortedClassCount=sorted(classCount.iteritems(),key=operator.itemgetter(1),reverse=True) # reverse 递减排序
+    return sortedClassCount[0][0]
+
+"""创建树"""
+def createTree(dataSet,labels):
+    # 标签列表
+    classList=[example[-1] for example in dataSet]
+    # 类别完全相同则停止继续划分
+    if classList.count(classList[0])==len(classList):
+        return classList[0]
+    # 遍历完所有的特征时返回出现次数最多的标签
+    if len(dataSet[0])==1:
+        return majorityCnt(classList)
+    # 选取最好的特征
+    bestFeat=chooseBestFeatureToSplit(dataSet)
+    bestFeatLabel=labels[bestFeat]
+    myTree={bestFeatLabel:{}}
+    del(labels[bestFeat])
+    featValues=[example[bestFeat] for example in dataSet]
+    uniqueVals=set(featValues)
+    for value in uniqueVals:
+        subLabels=labels[:]
+        myTree[bestFeatLabel][value]=createTree(splitDataSet(dataSet,bestFeat,value),subLabels)
+    return myTree
