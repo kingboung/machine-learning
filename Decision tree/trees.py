@@ -6,7 +6,7 @@
 from numpy import *
 from math import log
 
-import operator
+import operator,pickle
 
 def createDataSet():
     dataSet=[[1,1,'yes'],
@@ -145,3 +145,13 @@ def classify(inputTree,featLabels,testVec):
             else:   classLabel = secondDict[key]
     return classLabel
 
+# 将分类器存储到硬盘上
+def storeTree(inputTree, filename):
+    fw = open(filename, 'w')
+    pickle.dump(inputTree, fw)
+    fw.close()
+
+# 读取硬盘上的分类器
+def grabTree(filename):
+    fr = open(filename, 'r')
+    return pickle.load(fr)
