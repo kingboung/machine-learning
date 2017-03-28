@@ -3,10 +3,12 @@
 
 # 决策树
 
-from numpy import *
 from math import log
+from numpy import *
 
 import operator,pickle
+
+from treePlotter import createPlot
 
 def createDataSet():
     dataSet=[[1,1,'yes'],
@@ -155,3 +157,28 @@ def storeTree(inputTree, filename):
 def grabTree(filename):
     fr = open(filename, 'r')
     return pickle.load(fr)
+
+"""构建lenses决策树"""
+def lensesCreateTree():
+    fr = open('lenses.txt','r')
+    lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+    lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+    lensesTree = createTree(lenses, lensesLabels)
+    storeTree(lensesTree, 'lensesClassifier')
+
+"""绘制决策树"""
+def lensesShowTree():
+    myTree = grabTree('lensesClassifier')
+    createPlot(myTree)
+
+"""lenses分类器"""
+def lensesClassifier(testVec):
+    myTree = grabTree('lensesClassifier')
+    lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+    return classify(myTree, lensesLabels, testVec)
+
+# lensesCreateTree()
+
+# lensesShowTree()
+
+# print lensesClassifier(['presbyopic','hyper','no','normal'])
